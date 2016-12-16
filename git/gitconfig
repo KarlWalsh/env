@@ -1,0 +1,7 @@
+[user]
+	name = Karl Walsh
+	email = karl.mark.walsh@gmail.com
+    
+[alias]
+    co = checkout
+    st = status
