@@ -9,19 +9,6 @@ WHITE=$(tput setaf 0)
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
 
-export BLACK
-export MAGENTA
-export ORANGE
-export GREEN
-export PURPLE
-export WHITE
-export BOLD
-export RESET
-
-default_username='unknown'
-OSNAME="darwin: "
-PROMPTCHAR="\$"
-
 function git_info() {
   # check if we're in a git repo
   git rev-parse --is-inside-work-tree &>/dev/null || return
@@ -35,41 +22,6 @@ function git_info() {
   echo "$RESET$BOLD on $PURPLE$branch$dirty"
 }
 
-# Only show username/host if not default
-function usernamehost() {
-  if [ "$USER" != $default_username ]; then
-    echo "${BLUE}${OSNAME}${MAGENTA}$USER${RESET}${BOLD}@${ORANGE}$HOSTNAME${RESET}${BOLD} in ";
-  else
-    echo "${BLUE}${OSNAME}";
-  fi
-}
+PROMPTCHAR="∞"
 
-# iTerm Tab and Title Customization and prompt customization
-# http://sage.ucsc.edu/xtal/iterm_tab_customization.html
-
-# Put the string " [bash]   hostname::/full/directory/path"
-# in the title bar using the command sequence
-# \[\e]2;[bash]   \h::\]$PWD\[\a\]
-
-# Put the penultimate and current directory
-# in the iterm tab
-# \[\e]1;\]$(basename $(dirname $PWD))/\W\[\a\]
-
-PS1="\[\e]2;$PWD\[\a\]\[\e]1;\]$(basename "$(dirname "$PWD")")/\W\[\a\]${BOLD}\$(usernamehost)\[$GREEN\]\w\$(git_info)\[$RESET\]\[$BOLD\]\n${PROMPTCHAR} \[$RESET\]"
-
-#
-# # Git branch details
-# function parse_git_dirty() {
-#     [[ $(git status 2> /dev/null | tail -n1) != *"working directory clean"* ]] && echo "*"
-# }
-#
-# function parse_git_branch() {
-#     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1$(parse_git_dirty)/"
-# }
-#
-# # Change this symbol to something sweet.
-# # (http://en.wikipedia.org/wiki/Unicode_symbols)
-# symbol="∞  "
-#
-# export PS1="\[${BOLD}${MAGENTA}\]\u \[$WHITE\]in \[$GREEN\]\w\[$WHITE\]\$([[ -n \$(git branch 2> /dev/null) ]] && echo \" on \")\[$PURPLE\]\$(parse_git_branch)\[$WHITE\]\n$symbol\[$RESET\]"
-# export PS2="\[$ORANGE\]→ \[$RESET\]"
+PS1="\[\e]2;$PWD\[\a\]\[\e]1;\]$(basename "$(dirname "$PWD")")/\W\[\a\]${BOLD}${MAGENTA}\u${RESET} in \[$GREEN\]\w\$(git_info)\[$RESET\]\[$BOLD\]\n${PROMPTCHAR} \[$RESET\]"
