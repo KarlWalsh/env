@@ -5,3 +5,5 @@
 [alias]
     co = checkout
     st = status
+[core]
+	excludesfile = ~/.gitignore_global
