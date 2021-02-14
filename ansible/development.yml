@@ -3,6 +3,15 @@
 
   vars:
     user: "{{ ansible_user_id }}"
+
+  vars_prompt:
+    - name: git_username
+      prompt: "Git user name (first-name last-name)"
+      private: no
+
+    - name: git_email
+      prompt: "Global git email address"
+      private: no
       
   tasks:
   - name: Applying playbook for user {{ user }}
@@ -21,6 +30,18 @@
     get_url:
       url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitconfig
       dest: ~/.gitconfig
+
+  - name: Configure git username
+    community.general.git_config:
+      name: user.name
+      value: "{{ git_username }}"
+      scope: global
+
+  - name: Configure git email address
+    community.general.git_config:
+      name: user.email
+      value: "{{ git_email }}"
+      scope: global
     
   - name: Configure global gitignore
     get_url:
