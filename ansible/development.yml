@@ -92,7 +92,7 @@
       path: ~/.config/tmuxinator
       state: directory
     
-  - name: Install tmuxinator config
+  - name: Configure tmuxinator
     get_url:
       url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmuxinator/default.yml
       dest: ~/.config/tmuxinator/default.yml
@@ -140,7 +140,7 @@
       return_content: yes
     register: kubectl_version
     
-  - name: "Download kubectl {{ kubectl_version.content }}"
+  - name: Download kubectl {{ kubectl_version.content }}
     get_url:
       url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
       dest: /usr/local/bin/kubectl
