@@ -109,6 +109,11 @@
         - glogg
       state: present
     become: yes
+
+  - name: Configure vim
+    get_url:
+      url: https://raw.githubusercontent.com/karlwalsh/env/master/config/vim/vimrc
+      dest: ~/.vimrc
     
   - name: Install fonts
     apt:
