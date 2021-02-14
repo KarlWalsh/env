@@ -1,0 +1,9 @@
+[alias]
+    st = status
+    co = checkout
+[core]
+    autocrlf = input
+    editor = vim
+    excludesfile = ~/.gitignore
+[pull]
+    ff = only
