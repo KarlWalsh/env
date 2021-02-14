@@ -226,7 +226,7 @@
       state: present
     become: yes
 
-  - name: Install JDKs
+  - name: Install and configure JDKs
     block:
       - name: Install JDK 8
         apt:
@@ -262,58 +262,86 @@
             - curl
         become: yes
 
-      - name: Add Docker gpg apt key
-        apt_key:
-          keyserver: https://download.docker.com/linux/ubuntu/gpg
-          id: 0EBFCD88
-          state: present
-        become: yes
+      - name: Configure apt so we can install docker
+        block:
+          - name: Add Docker gpg apt key
+            apt_key:
+              keyserver: https://download.docker.com/linux/ubuntu/gpg
+              id: 0EBFCD88
+              state: present
+            become: yes
 
-      - name: Add Docker repository
-        apt_repository:
-          repo: deb https://download.docker.com/linux/ubuntu groovy stable
-          state: present
-          update_cache: yes
-        become: yes
+          - name: Add Docker repository
+            apt_repository:
+              repo: deb https://download.docker.com/linux/ubuntu groovy stable
+              state: present
+              update_cache: yes
+            become: yes
 
-      - name: Install docker-ce
-        apt:
-          pkg:
-            - docker-ce
-            - docker-ce-cli
-            - containerd.io
-          state: present
-        become: yes
+      - name: Install docker components
+        block:
+          - name: Install docker-ce
+            apt:
+              pkg:
+                - docker-ce
+                - docker-ce-cli
+                - containerd.io
+              state: present
+            become: yes
 
-      - name: Install docker-compose
-        apt:
-          name: docker-compose
-        become: yes
+          - name: Install docker-compose
+            apt:
+              name: docker-compose
+            become: yes
 
-      - name: Ensure docker group exists
-        group:
-          name: docker
-          state: present
-        become: yes
+      - name: Ensure user {{ user }} can access docker
+        block:
+          - name: Ensure docker group exists
+            group:
+              name: docker
+              state: present
+            become: yes
 
-      - name: Add user "{{ user }}" to docker group
-        user:
-          name: "{{ user }}"
-          groups: docker
-          append: yes
-        become: yes
+          - name: Add user {{ user }} to docker group
+            user:
+              name: "{{ user }}"
+              groups: docker
+              append: yes
+            become: yes
 
-      - name: Make sure docker is running
-        systemd:
-          name: docker.service
-          state: started
-          enabled: yes
-        become: yes
+      - name: Ensure docker is running
+        block:
+          - name: Ensure docker service is running
+            systemd:
+              name: docker.service
+              state: started
+              enabled: yes
+            become: yes
 
-      - name: Make sure containerd is running
-        systemd:
-          name: containerd.service
-          state: started
-          enabled: yes
-        become: yes
+          - name: Ensure containerd service is running
+            systemd:
+              name: containerd.service
+              state: started
+              enabled: yes
+            become: yes
+
+      - name: Use portainer to manage docker
+        block:
+          - name: Create portainer volume
+            docker_volume:
+              name: portainer_data
+            become: yes
+
+          - name: Start portainer container
+            docker_container:
+              name: portainer
+              image: portainer/portainer-ce
+              restart_policy: always
+              ports:
+                - 8000:8000
+                - 9000:9000
+              volumes:
+                - /var/run/docker.sock:/var/run/docker.sock
+                - portainer_data:/data
+            become: yes
 
