@@ -143,58 +143,54 @@
 
   - name: Install and configure kubernetes
     block:
-      - name: Download minikube
-        get_url:
-          url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-          dest: /usr/local/bin/minikube
-        become: yes
-
-      - name: Install minikube
-        file:
-          path: /usr/local/bin/minikube
-          mode: '0755'
-        become: yes
-
       - name: Get stable kubectl version
         uri:
           url: https://dl.k8s.io/release/stable.txt
           return_content: yes
         register: kubectl_version
 
-      - name: Download kubectl {{ kubectl_version.content }}
-        get_url:
-          url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
-          dest: /usr/local/bin/kubectl
-        become: yes
+      - name: Download and install kubernetes components
+        block:
+          - name: Download minikube
+            get_url:
+              url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+              dest: /usr/local/bin/minikube
 
-      - name: Make kubectl executable
-        file:
-          path: /usr/local/bin/kubectl
-          mode: '0755'
-        become: yes
+          - name: Install minikube
+            file:
+              path: /usr/local/bin/minikube
+              mode: '0755'
 
-      - name: Download kubectx
-        get_url:
-          url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx
-          dest: /usr/local/bin/kubectx
-        become: yes
+          - name: Download kubectl {{ kubectl_version.content }}
+            get_url:
+              url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
+              dest: /usr/local/bin/kubectl
 
-      - name: Make kubectx executable
-        file:
-          path: /usr/local/bin/kubectx
-          mode: '0755'
-        become: yes
+          - name: Make kubectl executable
+            file:
+              path: /usr/local/bin/kubectl
+              mode: '0755'
 
-      - name: Download kubens
-        get_url:
-          url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens
-          dest: /usr/local/bin/kubens
-        become: yes
+          - name: Download kubectx
+            get_url:
+              url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx
+              dest: /usr/local/bin/kubectx
+            become: yes
 
-      - name: Make kubens executable
-        file:
-          path: /usr/local/bin/kubens
-          mode: '0755'
+          - name: Make kubectx executable
+            file:
+              path: /usr/local/bin/kubectx
+              mode: '0755'
+
+          - name: Download kubens
+            get_url:
+              url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens
+              dest: /usr/local/bin/kubens
+
+          - name: Make kubens executable
+            file:
+              path: /usr/local/bin/kubens
+              mode: '0755'
         become: yes
 
       - name: Ensure zsh completions directory is available
@@ -231,24 +227,21 @@
       - name: Install JDK 8
         apt:
           name: openjdk-8-jdk
-        become: yes
 
       - name: Install JDK 11
         apt:
           name: openjdk-11-jdk
-        become: yes
 
       - name: Select JDK 11 (java)
         alternatives:
           name: java
           path: /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-        become: yes
 
       - name: Select JDK 11 (javac)
         alternatives:
           name: javac
           path: /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-        become: yes
+    become: yes
 
   - name: Install and configure docker
     block:
@@ -269,14 +262,13 @@
               keyserver: https://download.docker.com/linux/ubuntu/gpg
               id: 0EBFCD88
               state: present
-            become: yes
 
           - name: Add Docker repository
             apt_repository:
               repo: deb https://download.docker.com/linux/ubuntu groovy stable
               state: present
               update_cache: yes
-            become: yes
+        become: yes
 
       - name: Install docker components
         block:
@@ -287,12 +279,11 @@
                 - docker-ce-cli
                 - containerd.io
               state: present
-            become: yes
 
           - name: Install docker-compose
             apt:
               name: docker-compose
-            become: yes
+        become: yes
 
       - name: Ensure user {{ user }} can access docker
         block:
@@ -300,14 +291,13 @@
             group:
               name: docker
               state: present
-            become: yes
 
           - name: Add user {{ user }} to docker group
             user:
               name: "{{ user }}"
               groups: docker
               append: yes
-            become: yes
+        become: yes
 
       - name: Ensure docker is running
         block:
@@ -316,21 +306,19 @@
               name: docker.service
               state: started
               enabled: yes
-            become: yes
 
           - name: Ensure containerd service is running
             systemd:
               name: containerd.service
               state: started
               enabled: yes
-            become: yes
+        become: yes
 
       - name: Use portainer to manage docker
         block:
           - name: Create portainer volume
             docker_volume:
               name: portainer_data
-            become: yes
 
           - name: Start portainer container
             docker_container:
@@ -343,5 +331,5 @@
               volumes:
                 - /var/run/docker.sock:/var/run/docker.sock
                 - portainer_data:/data
-            become: yes
+        become: yes
 
