@@ -3,106 +3,130 @@
 
   vars:
     user: "{{ ansible_user_id }}"
-
-  vars_prompt:
-    - name: git_username
-      prompt: "Git user name (first-name last-name)"
-      private: no
-
-    - name: git_email
-      prompt: "Global git email address"
-      private: no
+    configure_git: false
       
   tasks:
-  - name: Applying playbook for user {{ user }}
+  - name: Playbook information
     debug:
-      msg: for user {{ user }}
-      
-  - name: Install zsh (and dependencies)
-    apt:
-      pkg:
-        - git
-        - zsh
-      state: present
-    become: yes
-    
-  - name: Configure git
-    get_url:
-      url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitconfig
-      dest: ~/.gitconfig
+      msg: "Applying playbook for user '{{ user }}'"
 
-  - name: Configure git username
-    community.general.git_config:
-      name: user.name
-      value: "{{ git_username }}"
-      scope: global
+  - name: Install and configure git
+    block:
+      - name: Install git
+        apt:
+          pkg:
+            - git
+          state: present
+        become: yes
 
-  - name: Configure git email address
-    community.general.git_config:
-      name: user.email
-      value: "{{ git_email }}"
-      scope: global
-    
-  - name: Configure global gitignore
-    get_url:
-      url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitignore
-      dest: ~/.gitignore
-      
+      - name: Configure git
+        when: configure_git | bool
+        block:
+          - name: Git configuration
+            debug:
+              msg: "Configuring git with global user {{ git_username }} and global email {{ git_email }}"
+
+          - name: Apply base gitconfig
+            get_url:
+              url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitconfig
+              dest: ~/.gitconfig
+
+          - name: Configure git username
+            community.general.git_config:
+              name: user.name
+              value: "{{ git_username }}"
+              scope: global
+
+          - name: Configure git email address
+            community.general.git_config:
+              name: user.email
+              value: "{{ git_email }}"
+              scope: global
+
+          - name: Configure global gitignore
+            get_url:
+              url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitignore
+              dest: ~/.gitignore
+
   - name: Ensure projects directory exists
     file:
       path: ~/projects
       state: directory
-      
-  - name: Install oh-my-zsh
-    git: 
-      repo: https://github.com/robbyrussell/oh-my-zsh
-      dest: ~/projects/oh-my-zsh 
-      force: yes
-    
-  - name: Install z (jump around)
-    git:
-      repo: https://github.com/rupa/z.git
-      dest: ~/projects/z
-    
-  - name: Configure .zshrc
-    get_url:
-      url: https://raw.githubusercontent.com/karlwalsh/env/master/config/zsh/zshrc
-      dest: ~/.zshrc
-      
-  - name: Switch shell to zsh
-    user: 
-      name: "{{ user }}"
-      shell: /bin/zsh
-    become: yes
-    
-  - name: Install tmux
-    apt:
-      pkg:
-        - tmux
-        - tmuxinator
-    become: yes
-    
-  - name: Configure tmux
-    get_url:
-      url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmux/tmux.conf
-      dest: ~/.tmux.conf
-    
-  - name: Ensure tmuxinator config directory exists
-    file:
-      path: ~/.config/tmuxinator
-      state: directory
-    
-  - name: Configure tmuxinator
-    get_url:
-      url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmuxinator/default.yml
-      dest: ~/.config/tmuxinator/default.yml
+
+  - name: Install and configure zsh environment
+    block:
+      - name: Install zsh
+        apt:
+          pkg:
+            - zsh
+          state: present
+        become: yes
+
+      - name: Install oh-my-zsh
+        git:
+          repo: https://github.com/robbyrussell/oh-my-zsh
+          dest: ~/projects/oh-my-zsh
+          force: yes
+
+      - name: Install z (jump around)
+        git:
+          repo: https://github.com/rupa/z.git
+          dest: ~/projects/z
+
+      - name: Configure .zshrc
+        get_url:
+          url: https://raw.githubusercontent.com/karlwalsh/env/master/config/zsh/zshrc
+          dest: ~/.zshrc
+
+      - name: Switch shell to zsh
+        user:
+          name: "{{ user }}"
+          shell: /bin/zsh
+        become: yes
+
+  - name: Install and configure tmux
+    block:
+      - name: Install tmux
+        apt:
+          pkg:
+            - tmux
+            - tmuxinator
+          state: present
+        become: yes
+
+      - name: Configure tmux
+        get_url:
+          url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmux/tmux.conf
+          dest: ~/.tmux.conf
+
+      - name: Ensure tmuxinator config directory exists
+        file:
+          path: ~/.config/tmuxinator
+          state: directory
+
+      - name: Configure tmuxinator
+        get_url:
+          url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmuxinator/default.yml
+          dest: ~/.config/tmuxinator/default.yml
+
+  - name: Install and configure vim
+    block:
+      - name: Install development tools
+        apt:
+          pkg:
+            - vim
+          state: present
+        become: yes
+
+      - name: Configure vim
+        get_url:
+          url: https://raw.githubusercontent.com/karlwalsh/env/master/config/vim/vimrc
+          dest: ~/.vimrc
       
   - name: Install development tools
     apt:
       pkg:
-        - git
         - maven
-        - vim
         - httpie
         - curl
         - tilda
@@ -110,86 +134,83 @@
       state: present
     become: yes
 
-  - name: Configure vim
-    get_url:
-      url: https://raw.githubusercontent.com/karlwalsh/env/master/config/vim/vimrc
-      dest: ~/.vimrc
-    
   - name: Install fonts
     apt:
       pkg: 
         - fonts-firacode
         - fonts-liberation
     become: yes
-    
-  - name: Download minikube
-    get_url:
-      url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-      dest: /usr/local/bin/minikube
-    become: yes
-      
-  - name: Install minikube
-    file:
-      path: /usr/local/bin/minikube
-      mode: '0755'
-    become: yes
-      
-  - name: Get stable kubectl version
-    uri: 
-      url: https://dl.k8s.io/release/stable.txt
-      return_content: yes
-    register: kubectl_version
-    
-  - name: Download kubectl {{ kubectl_version.content }}
-    get_url:
-      url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
-      dest: /usr/local/bin/kubectl
-    become: yes
-      
-  - name: Make kubectl executable
-    file:
-      path: /usr/local/bin/kubectl
-      mode: '0755'
-    become: yes
-    
-  - name: Download kubectx
-    get_url:
-      url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx
-      dest: /usr/local/bin/kubectx
-    become: yes
-      
-  - name: Make kubectx executable
-    file:
-      path: /usr/local/bin/kubectx
-      mode: '0755'
-    become: yes
-    
-  - name: Download kubens
-    get_url:
-      url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens
-      dest: /usr/local/bin/kubens
-    become: yes
-      
-  - name: Make kubens executable
-    file:
-      path: /usr/local/bin/kubens
-      mode: '0755'
-    become: yes
-    
-  - name: Ensure zsh completions directory is available
-    file:
-      path: ~/projects/oh-my-zsh/completions
-      state: directory
-        
-  - name: Install kubectx zsh completions
-    get_url:
-      url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubectx.zsh
-      dest: ~/projects/oh-my-zsh/completions/_kubectx.zsh
-        
-  - name: Install kubens zsh completions
-    get_url:
-      url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubens.zsh
-      dest: ~/projects/oh-my-zsh/completions/_kubens.zsh
+
+  - name: Install and configure kubernetes
+    block:
+      - name: Download minikube
+        get_url:
+          url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          dest: /usr/local/bin/minikube
+        become: yes
+
+      - name: Install minikube
+        file:
+          path: /usr/local/bin/minikube
+          mode: '0755'
+        become: yes
+
+      - name: Get stable kubectl version
+        uri:
+          url: https://dl.k8s.io/release/stable.txt
+          return_content: yes
+        register: kubectl_version
+
+      - name: Download kubectl {{ kubectl_version.content }}
+        get_url:
+          url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
+          dest: /usr/local/bin/kubectl
+        become: yes
+
+      - name: Make kubectl executable
+        file:
+          path: /usr/local/bin/kubectl
+          mode: '0755'
+        become: yes
+
+      - name: Download kubectx
+        get_url:
+          url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx
+          dest: /usr/local/bin/kubectx
+        become: yes
+
+      - name: Make kubectx executable
+        file:
+          path: /usr/local/bin/kubectx
+          mode: '0755'
+        become: yes
+
+      - name: Download kubens
+        get_url:
+          url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens
+          dest: /usr/local/bin/kubens
+        become: yes
+
+      - name: Make kubens executable
+        file:
+          path: /usr/local/bin/kubens
+          mode: '0755'
+        become: yes
+
+      - name: Ensure zsh completions directory is available
+        file:
+          path: ~/projects/oh-my-zsh/completions
+          state: directory
+
+      - name: Install kubectx zsh completions
+        get_url:
+          url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubectx.zsh
+          dest: ~/projects/oh-my-zsh/completions/_kubectx.zsh
+
+      - name: Install kubens zsh completions
+        get_url:
+          url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubens.zsh
+          dest: ~/projects/oh-my-zsh/completions/_kubens.zsh
     
   - name: Install IntelliJ IDEA (snap)
     snap:
@@ -204,91 +225,95 @@
         - neofetch
       state: present
     become: yes
-      
-  - name: Install JDK 8
-    apt: 
-      name: openjdk-8-jdk
-    become: yes
-   
-  - name: Install JDK 11
-    apt:
-      name: openjdk-11-jdk
-    become: yes
-      
-  - name: Select JDK 11 (java)
-    alternatives:
-      name: java
-      path: /usr/lib/jvm/java-11-openjdk-amd64/bin/java
-    become: yes
-      
-  - name: Select JDK 11 (javac)
-    alternatives:
-      name: javac
-      path: /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
-    become: yes
 
-  - name: Install docker pre-requisites
-    apt:
-      pkg:
-        - apt-transport-https
-        - ca-certificates
-        - gnupg-agent
-        - software-properties-common
-        - curl
-    become: yes
+  - name: Install JDKs
+    block:
+      - name: Install JDK 8
+        apt:
+          name: openjdk-8-jdk
+        become: yes
 
-  - name: Add Docker gpg apt key
-    apt_key:
-      keyserver: https://download.docker.com/linux/ubuntu/gpg
-      id: 0EBFCD88
-      state: present
-    become: yes
-      
-  - name: Add Docker repository
-    apt_repository:
-      repo: deb https://download.docker.com/linux/ubuntu groovy stable
-      state: present
-      update_cache: yes
-    become: yes
+      - name: Install JDK 11
+        apt:
+          name: openjdk-11-jdk
+        become: yes
 
-  - name: Install docker-ce
-    apt:
-      pkg:
-        - docker-ce
-        - docker-ce-cli
-        - containerd.io
-      state: present
-    become: yes
-      
-  - name: Install docker-compose
-    apt:
-      name: docker-compose
-    become: yes
-      
-  - name: Ensure docker group exists
-    group:
-      name: docker
-      state: present
-    become: yes
-      
-  - name: Add user "{{ user }}" to docker group
-    user: 
-      name: "{{ user }}"
-      groups: docker
-      append: yes
-    become: yes
-    
-  - name: Make sure docker is running
-    systemd:
-      name: docker.service
-      state: started
-      enabled: yes
-    become: yes
-    
-  - name: Make sure containerd is running
-    systemd:
-      name: containerd.service
-      state: started
-      enabled: yes
-    become: yes
+      - name: Select JDK 11 (java)
+        alternatives:
+          name: java
+          path: /usr/lib/jvm/java-11-openjdk-amd64/bin/java
+        become: yes
+
+      - name: Select JDK 11 (javac)
+        alternatives:
+          name: javac
+          path: /usr/lib/jvm/java-11-openjdk-amd64/bin/javac
+        become: yes
+
+  - name: Install and configure docker
+    block:
+      - name: Install docker pre-requisites
+        apt:
+          pkg:
+            - apt-transport-https
+            - ca-certificates
+            - gnupg-agent
+            - software-properties-common
+            - curl
+        become: yes
+
+      - name: Add Docker gpg apt key
+        apt_key:
+          keyserver: https://download.docker.com/linux/ubuntu/gpg
+          id: 0EBFCD88
+          state: present
+        become: yes
+
+      - name: Add Docker repository
+        apt_repository:
+          repo: deb https://download.docker.com/linux/ubuntu groovy stable
+          state: present
+          update_cache: yes
+        become: yes
+
+      - name: Install docker-ce
+        apt:
+          pkg:
+            - docker-ce
+            - docker-ce-cli
+            - containerd.io
+          state: present
+        become: yes
+
+      - name: Install docker-compose
+        apt:
+          name: docker-compose
+        become: yes
+
+      - name: Ensure docker group exists
+        group:
+          name: docker
+          state: present
+        become: yes
+
+      - name: Add user "{{ user }}" to docker group
+        user:
+          name: "{{ user }}"
+          groups: docker
+          append: yes
+        become: yes
+
+      - name: Make sure docker is running
+        systemd:
+          name: docker.service
+          state: started
+          enabled: yes
+        become: yes
+
+      - name: Make sure containerd is running
+        systemd:
+          name: containerd.service
+          state: started
+          enabled: yes
+        become: yes
 
