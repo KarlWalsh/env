@@ -213,14 +213,6 @@
       name: intellij-idea-ultimate
       classic: yes
     become: yes
-      
-  - name: Install tools
-    apt:
-      pkg:
-        - htop
-        - neofetch
-      state: present
-    become: yes
 
   - name: Install and configure JDKs
     block:
@@ -333,3 +325,29 @@
                 - portainer_data:/data
         become: yes
 
+  - name: Install desktop apps and tools
+    block:
+      - name: Install Dropbox
+        block:
+          - name: Ensure Dropbx dist directory exists
+            file:
+              path: ~/.dropbox-dist
+              state: directory
+
+          - name: Download and extract Dropbox
+            ansible.builtin.unarchive:
+              src: https://www.dropbox.com/download?plat=lnx.x86_64
+              dest: ~/
+              creates: ~/.dropbox-dist
+              remote_src: yes
+
+          - name: Start Dropbox
+            shell: "~/.dropbox-dist/dropboxd &"
+
+      - name: Install tools
+        apt:
+          pkg:
+            - htop
+            - neofetch
+          state: present
+        become: yes
