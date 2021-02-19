@@ -3,12 +3,13 @@
 
   vars:
     user: "{{ ansible_user_id }}"
+    home: "{{ lookup('env','HOME') }}"
     configure_git: false
       
   tasks:
   - name: Playbook information
     debug:
-      msg: "Applying playbook for user '{{ user }}'"
+      msg: "Applying playbook for user '{{ user }}' with home directory '{{ home }}'"
 
   - name: Install and configure git
     block:
@@ -29,7 +30,7 @@
           - name: Apply base gitconfig
             get_url:
               url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitconfig
-              dest: ~/.gitconfig
+              dest: "{{ home }}/.gitconfig"
 
           - name: Configure git username
             community.general.git_config:
@@ -46,11 +47,11 @@
           - name: Configure global gitignore
             get_url:
               url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitignore
-              dest: ~/.gitignore
+              dest: "{{ home }}/.gitignore"
 
   - name: Ensure projects directory exists
     file:
-      path: ~/projects
+      path: "{{ home }}/projects"
       state: directory
 
   - name: Install and configure zsh environment
@@ -65,18 +66,18 @@
       - name: Install oh-my-zsh
         git:
           repo: https://github.com/robbyrussell/oh-my-zsh
-          dest: ~/projects/oh-my-zsh
+          dest: "{{ home }}/projects/oh-my-zsh"
           force: yes
 
       - name: Install z (jump around)
         git:
           repo: https://github.com/rupa/z.git
-          dest: ~/projects/z
+          dest: "{{ home }}/projects/z"
 
       - name: Configure .zshrc
         get_url:
           url: https://raw.githubusercontent.com/karlwalsh/env/master/config/zsh/zshrc
-          dest: ~/.zshrc
+          dest: "{{ home }}/.zshrc"
 
       - name: Switch shell to zsh
         user:
@@ -97,17 +98,17 @@
       - name: Configure tmux
         get_url:
           url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmux/tmux.conf
-          dest: ~/.tmux.conf
+          dest: "{{ home }}/.tmux.conf"
 
       - name: Ensure tmuxinator config directory exists
         file:
-          path: ~/.config/tmuxinator
+          path: "{{ home }}/.config/tmuxinator"
           state: directory
 
       - name: Configure tmuxinator
         get_url:
           url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmuxinator/default.yml
-          dest: ~/.config/tmuxinator/default.yml
+          dest: "{{ home }}/.config/tmuxinator/default.yml"
 
   - name: Install and configure vim
     block:
@@ -121,7 +122,7 @@
       - name: Configure vim
         get_url:
           url: https://raw.githubusercontent.com/karlwalsh/env/master/config/vim/vimrc
-          dest: ~/.vimrc
+          dest: "{{ home }}/.vimrc"
       
   - name: Install development tools (apt)
     apt:
@@ -209,18 +210,18 @@
 
       - name: Ensure zsh completions directory is available
         file:
-          path: ~/projects/oh-my-zsh/completions
+          path: "{{ home }}/projects/oh-my-zsh/completions"
           state: directory
 
       - name: Install kubectx zsh completions
         get_url:
           url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubectx.zsh
-          dest: ~/projects/oh-my-zsh/completions/_kubectx.zsh
+          dest: "{{ home }}/projects/oh-my-zsh/completions/_kubectx.zsh"
 
       - name: Install kubens zsh completions
         get_url:
           url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubens.zsh
-          dest: ~/projects/oh-my-zsh/completions/_kubens.zsh
+          dest: "{{ home }}/projects/oh-my-zsh/completions/_kubens.zsh"
 
   - name: Install and configure JDKs
     block:
@@ -339,18 +340,18 @@
         block:
           - name: Ensure Dropbx dist directory exists
             file:
-              path: ~/.dropbox-dist
+              path: "{{ home }}/.dropbox-dist"
               state: directory
 
           - name: Download and extract Dropbox
             ansible.builtin.unarchive:
               src: https://www.dropbox.com/download?plat=lnx.x86_64
-              dest: ~/
-              creates: ~/.dropbox-dist
+              dest: "{{ home }}"
+              creates: "{{ home }}/.dropbox-dist"
               remote_src: yes
 
           - name: Start Dropbox
-            shell: "~/.dropbox-dist/dropboxd &"
+            shell: "{{ home }}/.dropbox-dist/dropboxd &"
 
       - name: Install tools
         apt:
