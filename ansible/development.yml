@@ -142,13 +142,11 @@
       - name: Install IntelliJ IDEA (snap)
         snap:
           name: intellij-idea-ultimate
-          classic: yes
         become: yes
 
       - name: Install Insomnia REST Client
         snap:
           name: insomnia
-          classic: yes
         become: yes
 
   - name: Install fonts
@@ -354,6 +352,12 @@
 
           - name: Start Dropbox
             shell: "{{ home }}/.dropbox-dist/dropboxd &"
+
+      - name: Install 1Password
+        snap:
+          name: 1password
+          channel: latest/edge
+        become: yes
 
       - name: Install tools
         apt:
