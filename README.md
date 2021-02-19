@@ -15,6 +15,6 @@
 
     ansible development.yml -K
 
-The default behaviour is to not configure git - if you wish to configure git then provide the following extra vars
+The default behaviour is to not configure git - if you wish to configure git then provide the following tag and variables
 
-    ansible development.yml -K -e "configure_git=true git_username='Groovy Gorilla' git_email=groovy.gorilla@ubuntu.com"
+    ansible development.yml -K --tags configure-git -e "git_username='Groovy Gorilla' git_email=groovy.gorilla@ubuntu.com"

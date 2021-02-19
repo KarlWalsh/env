@@ -6,7 +6,6 @@
     home: "{{ lookup('env','HOME') }}"
     projects: "projects"
     projects_dir: "{{ home }}/{{ projects }}"
-    configure_git: false
       
   tasks:
   - name: Playbook information
@@ -23,7 +22,7 @@
         become: yes
 
       - name: Configure git
-        when: configure_git | bool
+        tags: [never, configure-git]
         block:
           - name: Git configuration
             debug:
