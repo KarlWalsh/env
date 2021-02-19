@@ -336,23 +336,6 @@
 
   - name: Install desktop apps and tools
     block:
-      - name: Install Dropbox
-        block:
-          - name: Ensure Dropbx dist directory exists
-            file:
-              path: "{{ home }}/.dropbox-dist"
-              state: directory
-
-          - name: Download and extract Dropbox
-            ansible.builtin.unarchive:
-              src: https://www.dropbox.com/download?plat=lnx.x86_64
-              dest: "{{ home }}"
-              creates: "{{ home }}/.dropbox-dist"
-              remote_src: yes
-
-          - name: Start Dropbox
-            shell: "{{ home }}/.dropbox-dist/dropboxd &"
-
       - name: Install 1Password
         snap:
           name: 1password
