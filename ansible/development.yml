@@ -4,12 +4,14 @@
   vars:
     user: "{{ ansible_user_id }}"
     home: "{{ lookup('env','HOME') }}"
+    projects: "projects"
+    projects_dir: "{{ home }}/{{ projects }}"
     configure_git: false
       
   tasks:
   - name: Playbook information
     debug:
-      msg: "Applying playbook for user '{{ user }}' with home directory '{{ home }}'"
+      msg: "Applying playbook for user '{{ user }}' with home directory '{{ home }}' and with projects directory '{{ projects_dir }}'"
 
   - name: Install and configure git
     block:
@@ -49,9 +51,9 @@
               url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitignore
               dest: "{{ home }}/.gitignore"
 
-  - name: Ensure projects directory exists
+  - name: "Ensure projects directory exists at '{{ projects_dir }}'"
     file:
-      path: "{{ home }}/projects"
+      path: "{{ projects_dir }}"
       state: directory
 
   - name: Install and configure zsh environment
@@ -66,13 +68,13 @@
       - name: Install oh-my-zsh
         git:
           repo: https://github.com/robbyrussell/oh-my-zsh
-          dest: "{{ home }}/projects/oh-my-zsh"
+          dest: "{{ projects_dir }}/oh-my-zsh"
           force: yes
 
       - name: Install z (jump around)
         git:
           repo: https://github.com/rupa/z.git
-          dest: "{{ home }}/projects/z"
+          dest: "{{ projects_dir }}/z"
 
       - name: Configure .zshrc
         get_url:
@@ -210,18 +212,18 @@
 
       - name: Ensure zsh completions directory is available
         file:
-          path: "{{ home }}/projects/oh-my-zsh/completions"
+          path: "{{ projects_dir }}/oh-my-zsh/completions"
           state: directory
 
       - name: Install kubectx zsh completions
         get_url:
           url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubectx.zsh
-          dest: "{{ home }}/projects/oh-my-zsh/completions/_kubectx.zsh"
+          dest: "{{ projects_dir }}/oh-my-zsh/completions/_kubectx.zsh"
 
       - name: Install kubens zsh completions
         get_url:
           url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubens.zsh
-          dest: "{{ home }}/projects/oh-my-zsh/completions/_kubens.zsh"
+          dest: "{{ projects_dir }}/oh-my-zsh/completions/_kubens.zsh"
 
   - name: Install and configure JDKs
     block:
