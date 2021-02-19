@@ -123,7 +123,7 @@
           url: https://raw.githubusercontent.com/karlwalsh/env/master/config/vim/vimrc
           dest: ~/.vimrc
       
-  - name: Install development tools
+  - name: Install development tools (apt)
     apt:
       pkg:
         - maven
@@ -133,6 +133,20 @@
         - glogg
       state: present
     become: yes
+
+  - name: Install development tools (snaps)
+    block:
+      - name: Install IntelliJ IDEA (snap)
+        snap:
+          name: intellij-idea-ultimate
+          classic: yes
+        become: yes
+
+      - name: Install Insomnia REST Client
+        snap:
+          name: insomnia
+          classic: yes
+        become: yes
 
   - name: Install fonts
     apt:
@@ -207,12 +221,6 @@
         get_url:
           url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubens.zsh
           dest: ~/projects/oh-my-zsh/completions/_kubens.zsh
-    
-  - name: Install IntelliJ IDEA (snap)
-    snap:
-      name: intellij-idea-ultimate
-      classic: yes
-    become: yes
 
   - name: Install and configure JDKs
     block:
