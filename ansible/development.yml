@@ -348,3 +348,96 @@
             - neofetch
           state: present
         become: yes
+
+  - name: Configure swap
+    tags: [ never, configure-swap ]
+    block:
+      - name: Set swap file variable
+        set_fact:
+          swapfile: /swapfile
+
+      - name: "Check if swap file '{{ swapfile }}' already exists"
+        stat:
+          path: "{{ swapfile }}"
+        register: swapfile_check
+
+      - name: Check available swap before applying changes
+        command: grep SwapTotal /proc/meminfo
+        register: pre_swap_check
+
+      - name: "Notify of available swap"
+        debug:
+          msg: "Current available swap before applying changes is {{ pre_swap_check.stdout }}"
+
+      - name: "Create and allocate swap at '{{ swapfile }}' with size {{ swap_space_gig }}G"
+        when: not swapfile_check.stat.exists
+        become: yes
+        block:
+          - name: "No swapfile exists - lets create it"
+            debug:
+              msg: "Will create swapfile at {{ swapfile }}"
+
+          - name: Create swap file
+            command: fallocate -l {{ swap_space_gig }}G {{swapfile}}
+
+          - name: Create swap space
+            command: "dd if=/dev/zero of=/{{ swapfile }} bs=1G count={{swap_space_gig }}"
+
+          - name: Apply permissions
+            file:
+              path: "{{ swapfile }}"
+              mode: 0600
+
+          - name: Prepare swap file
+            command: "mkswap {{ swapfile }}"
+
+          - name: Add to fstab
+            lineinfile:
+              dest: /etc/fstab
+              regexp: "{{ swapfile }}"
+              line: "{{ swapfile }} none swap sw 0 0"
+
+          - name: Turn on swap
+            command: swapon -a
+
+          - name: Set swapiness
+            sysctl:
+              name: vm.swappin
+
+      - name: "Resize existing swap at '{{ swapfile }}' to {{ swap_space_gig }}G"
+        when: swapfile_check.stat.exists
+        become: yes
+        block:
+          - name: "swapfile already exists - lets update it"
+            debug:
+              msg: "Will update the swapfile at {{ swapfile }}"
+
+          - name: Turn off current swap
+            command: swapoff -a
+
+          - name: Reallocate swap space
+            command: "dd if=/dev/zero of=/{{ swapfile }} bs=1G count={{swap_space_gig }}"
+
+          - name: Apply permissions
+            file:
+              path: "{{ swapfile }}"
+              mode: 0600
+
+          - name: Prepare swap file
+            command: "mkswap {{ swapfile }}"
+
+          - name: Turn on swap
+            command: swapon -a
+
+          - name: Set swapiness
+            sysctl:
+              name: vm.swappiness
+              value: "1"
+
+      - name: Check available swap after applying changes
+        command: grep SwapTotal /proc/meminfo
+        register: post_swap_check
+
+      - name: "Notify of available swap"
+        debug:
+          msg: "Current available swap after applying changes is {{ post_swap_check.stdout }}"

@@ -13,8 +13,16 @@
 
 ## Run playbook
 
-    ansible development.yml -K
+    ansible-playbook development.yml -K
 
-The default behaviour is to not configure git - if you wish to configure git then provide the following tag and variables
+### Configuring git
 
-    ansible development.yml -K --tags configure-git -e "git_username='Groovy Gorilla' git_email=groovy.gorilla@ubuntu.com"
+Update global git config and pull down a global .gitignore template using the tag `configure-git`
+
+    ansible-playbook development.yml --tags configure-git -e "git_username='Groovy Gorilla' git_email=groovy.gorilla@ubuntu.com"
+
+### Configuring swap
+
+Create or updates an existing swapfile at `/swapfile` using the tag `configure-swap`
+
+    ansible-playbook development.yml -K --tags configure-swap -e "swap_space_gig=2"
