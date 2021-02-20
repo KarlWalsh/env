@@ -441,7 +441,7 @@
           - name: Set swapiness
             sysctl:
               name: vm.swappiness
-              value: "1"
+              value: "60"
 
       - name: Check available swap after applying changes
         command: grep SwapTotal /proc/meminfo
