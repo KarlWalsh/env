@@ -387,6 +387,12 @@
           channel: latest/edge
         become: yes
 
+      - name: Install Hey Mail
+        snap:
+          name: hey-mail
+          channel: latest/stable
+        become: yes
+
       - name: Install tools
         apt:
           pkg:
