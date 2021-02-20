@@ -8,8 +8,7 @@
     projects_dir: "{{ home }}/{{ projects }}"
       
   tasks:
-  - name: Playbook information
-    debug:
+  - debug:
       msg: "Applying playbook for user '{{ user }}' with home directory '{{ home }}' and with projects directory '{{ projects_dir }}'"
 
   - name: Install and configure git
@@ -24,8 +23,7 @@
       - name: Configure git
         tags: [never, configure-git]
         block:
-          - name: Git configuration
-            debug:
+          - debug:
               msg: "Configuring git with global user {{ git_username }} and global email {{ git_email }}"
 
           - name: Apply base gitconfig
