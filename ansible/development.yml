@@ -157,7 +157,7 @@
           regex: 'installed:\s+(\d+\.\d+)\.\d+'
 
       - debug:
-          msg: "We installed version {{ version }} of intellij-idea-ultimate"
+          msg: "We installed version {{ version }} of IntelliJ IDEA Ultimate"
 
       - name: Ensure IntelliJ IDEA config directory exists
         file:
@@ -168,11 +168,25 @@
       - debug:
           msg: "IntelliJ IDEA config directory exists at {{ intellij_idea_config_directory.path }}"
 
-      - name: "Configure IntelliJ IDEA {{ version }}"
+      - name: "Configure IntelliJ IDEA - idea.properties"
         copy:
           dest: "{{ intellij_idea_config_directory.path }}/idea.properties"
           content: |
             idea.max.intellisense.filesize=5000
+
+      - name: Ensure IntelliJ IDEA config codestyles directory exists
+          file:
+            path: "{{ home }}/.config/JetBrains/IntelliJIdea{{ version }}/codestyles"
+            state: directory
+          register: intellij_idea_codestyles_directory
+
+      - debug:
+          msg: "IntelliJ IDEA codestyles directory is {{ intellij_idea_codestyles_directory.path }}"
+
+      - name: "Configure IntelliJ IDEA - codestyles"
+        get_url:
+          url: https://raw.githubusercontent.com/karlwalsh/env/master/config/idea/codestyles/Default.xml
+          dest: "{{ intellij_idea_codestyles_directory.path }}/Default.xml"
 
   - name: Install Insomnia REST Client
     snap:
