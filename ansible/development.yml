@@ -141,6 +141,7 @@
       - name: Install IntelliJ IDEA (snap)
         snap:
           name: intellij-idea-ultimate
+          classic: yes
         become: yes
 
       - name: Install Insomnia REST Client
@@ -368,41 +369,6 @@
       - name: "Notify of available swap"
         debug:
           msg: "Current available swap before applying changes is {{ pre_swap_check.stdout }}"
-
-      - name: "Create and allocate swap at '{{ swapfile }}' with size {{ swap_space_gig }}G"
-        when: not swapfile_check.stat.exists
-        become: yes
-        block:
-          - name: "No swapfile exists - lets create it"
-            debug:
-              msg: "Will create swapfile at {{ swapfile }}"
-
-          - name: Create swap file
-            command: fallocate -l {{ swap_space_gig }}G {{swapfile}}
-
-          - name: Create swap space
-            command: "dd if=/dev/zero of=/{{ swapfile }} bs=1G count={{swap_space_gig }}"
-
-          - name: Apply permissions
-            file:
-              path: "{{ swapfile }}"
-              mode: 0600
-
-          - name: Prepare swap file
-            command: "mkswap {{ swapfile }}"
-
-          - name: Add to fstab
-            lineinfile:
-              dest: /etc/fstab
-              regexp: "{{ swapfile }}"
-              line: "{{ swapfile }} none swap sw 0 0"
-
-          - name: Turn on swap
-            command: swapon -a
-
-          - name: Set swapiness
-            sysctl:
-              name: vm.swappin
 
       - name: "Resize existing swap at '{{ swapfile }}' to {{ swap_space_gig }}G"
         when: swapfile_check.stat.exists
