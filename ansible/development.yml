@@ -175,10 +175,10 @@
             idea.max.intellisense.filesize=5000
 
       - name: Ensure IntelliJ IDEA config codestyles directory exists
-          file:
-            path: "{{ home }}/.config/JetBrains/IntelliJIdea{{ version }}/codestyles"
-            state: directory
-          register: intellij_idea_codestyles_directory
+        file:
+          path: "{{ home }}/.config/JetBrains/IntelliJIdea{{ version }}/codestyles"
+          state: directory
+        register: intellij_idea_codestyles_directory
 
       - debug:
           msg: "IntelliJ IDEA codestyles directory is {{ intellij_idea_codestyles_directory.path }}"
