@@ -121,9 +121,13 @@
         become: yes
 
       - name: Configure vim
-        get_url:
-          url: https://raw.githubusercontent.com/karlwalsh/env/master/config/vim/vimrc
+        copy:
           dest: "{{ home }}/.vimrc"
+          content: |
+            set tabstop=4
+            set softtabstop=4
+            set shiftwidth=4
+            set expandtab
       
   - name: Install development tools (apt)
     apt:
