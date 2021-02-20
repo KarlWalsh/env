@@ -136,18 +136,46 @@
       state: present
     become: yes
 
-  - name: Install development tools (snaps)
+  - name: Install and configure IntelliJ IDEA Ultimate
     block:
-      - name: Install IntelliJ IDEA (snap)
+      - name: Install IntelliJ IDEA Ultimate
         snap:
           name: intellij-idea-ultimate
           classic: yes
         become: yes
 
-      - name: Install Insomnia REST Client
-        snap:
-          name: insomnia
-        become: yes
+      - name: Determine which version we installed
+        command: snap info intellij-idea-ultimate
+        register: intellij_idea_ultimate_snap_info
+
+      - name: Extract version number from snap installation info
+        set_fact:
+          version: "{{ intellij_idea_ultimate_snap_info.stdout | regex_search(regex, '\\1') | first}}"
+        vars:
+          regex: 'installed:\s+(\d+\.\d+)\.\d+'
+
+      - debug:
+          msg: "We installed version {{ version }} of intellij-idea-ultimate"
+
+      - name: Ensure IntelliJ IDEA config directory exists
+        file:
+          path: "{{ home }}/.config/JetBrains/IntelliJIdea{{ version }}"
+          state: directory
+        register: intellij_idea_config_directory
+
+      - debug:
+          msg: "IntelliJ IDEA config directory exists at {{ intellij_idea_config_directory.path }}"
+
+      - name: "Configure IntelliJ IDEA {{ version }}"
+        copy:
+          dest: "{{ intellij_idea_config_directory.path }}/idea.properties"
+          content: |
+            idea.max.intellisense.filesize=5000
+
+  - name: Install Insomnia REST Client
+    snap:
+      name: insomnia
+    become: yes
 
   - name: Install fonts
     apt:
@@ -366,16 +394,14 @@
         command: grep SwapTotal /proc/meminfo
         register: pre_swap_check
 
-      - name: "Notify of available swap"
-        debug:
+      - debug:
           msg: "Current available swap before applying changes is {{ pre_swap_check.stdout }}"
 
       - name: "Resize existing swap at '{{ swapfile }}' to {{ swap_space_gig }}G"
         when: swapfile_check.stat.exists
         become: yes
         block:
-          - name: "swapfile already exists - lets update it"
-            debug:
+          - debug:
               msg: "Will update the swapfile at {{ swapfile }}"
 
           - name: Turn off current swap
@@ -404,6 +430,5 @@
         command: grep SwapTotal /proc/meminfo
         register: post_swap_check
 
-      - name: "Notify of available swap"
-        debug:
+      - debug:
           msg: "Current available swap after applying changes is {{ post_swap_check.stdout }}"
