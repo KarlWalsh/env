@@ -153,16 +153,16 @@
 
       - name: Extract version number from snap installation info
         set_fact:
-          version: "{{ intellij_idea_ultimate_snap_info.stdout | regex_search(regex, '\\1') | first}}"
+          idea_version: "{{ intellij_idea_ultimate_snap_info.stdout | regex_search(regex, '\\1') | first}}"
         vars:
           regex: 'installed:\s+(\d+\.\d+)\.\d+'
 
       - debug:
-          msg: "We installed version {{ version }} of IntelliJ IDEA Ultimate"
+          msg: "We installed version {{ idea_version }} of IntelliJ IDEA Ultimate"
 
       - name: Ensure IntelliJ IDEA config directory exists
         file:
-          path: "{{ home }}/.config/JetBrains/IntelliJIdea{{ version }}"
+          path: "{{ home }}/.config/JetBrains/IntelliJIdea{{ idea_version }}"
           state: directory
         register: intellij_idea_config_directory
 
@@ -177,7 +177,7 @@
 
       - name: Ensure IntelliJ IDEA config codestyles directory exists
         file:
-          path: "{{ home }}/.config/JetBrains/IntelliJIdea{{ version }}/codestyles"
+          path: "{{ intellij_idea_config_directory.path }}/codestyles"
           state: directory
         register: intellij_idea_codestyles_directory
 
