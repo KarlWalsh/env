@@ -149,6 +149,7 @@
       - name: Determine which version we installed
         command: snap info intellij-idea-ultimate
         register: intellij_idea_ultimate_snap_info
+        changed_when: False
 
       - name: Extract version number from snap installation info
         set_fact:
