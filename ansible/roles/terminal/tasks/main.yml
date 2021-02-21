@@ -1,45 +1,50 @@
 ---
-- name: Install terminal apps and tools - apt
-  become: yes
-  apt:
-    name: "{{ item.name }}"
-    state: present
-  with_items: "{{ apt_terminal }}"
+- name: Install and configure terminal tools
+  block:
+    - debug:
+        msg: "Install and configure terminal tools"
 
-- name: Install oh-my-zsh
-  git:
-    repo: https://github.com/robbyrussell/oh-my-zsh
-    dest: "{{ projects_dir }}/oh-my-zsh"
-    force: yes
+    - name: Install terminal apps and tools - apt
+      become: yes
+      apt:
+        name: "{{ item.name }}"
+        state: present
+      with_items: "{{ apt_terminal }}"
 
-- name: Install z (jump around)
-  git:
-    repo: https://github.com/rupa/z.git
-    dest: "{{ projects_dir }}/z"
+    - name: Install oh-my-zsh
+      git:
+        repo: https://github.com/robbyrussell/oh-my-zsh
+        dest: "{{ projects_dir }}/oh-my-zsh"
+        force: yes
 
-- name: Configure .zshrc
-  get_url:
-    url: https://raw.githubusercontent.com/karlwalsh/env/master/config/zsh/zshrc
-    dest: "{{ home }}/.zshrc"
+    - name: Install z (jump around)
+      git:
+        repo: https://github.com/rupa/z.git
+        dest: "{{ projects_dir }}/z"
 
-- name: Switch shell to zsh
-  become: yes
-  user:
-    name: "{{ user }}"
-    shell: /bin/zsh
+    - name: Configure .zshrc
+      get_url:
+        url: https://raw.githubusercontent.com/karlwalsh/env/master/config/zsh/zshrc
+        dest: "{{ home }}/.zshrc"
+
+    - name: Switch shell to zsh
+      become: yes
+      user:
+        name: "{{ user }}"
+        shell: /bin/zsh
 
 
-- name: Configure tmux
-  get_url:
-    url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmux/tmux.conf
-    dest: "{{ home }}/.tmux.conf"
+    - name: Configure tmux
+      get_url:
+        url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmux/tmux.conf
+        dest: "{{ home }}/.tmux.conf"
 
-- name: Ensure tmuxinator config directory exists
-  file:
-    path: "{{ home }}/.config/tmuxinator"
-    state: directory
+    - name: Ensure tmuxinator config directory exists
+      file:
+        path: "{{ home }}/.config/tmuxinator"
+        state: directory
 
-- name: Configure tmuxinator
-  get_url:
-    url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmuxinator/default.yml
-    dest: "{{ home }}/.config/tmuxinator/default.yml"
+    - name: Configure tmuxinator
+      get_url:
+        url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmuxinator/default.yml
+        dest: "{{ home }}/.config/tmuxinator/default.yml"

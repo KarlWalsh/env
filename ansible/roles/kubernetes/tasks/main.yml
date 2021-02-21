@@ -1,6 +1,9 @@
 ---
 - name: Install and configure kubernetes
   block:
+    - debug:
+        msg: "Install and configure kubernetes"
+
     - name: Get stable kubectl version
       uri:
         url: https://dl.k8s.io/release/stable.txt
@@ -9,6 +12,9 @@
 
     - name: Download and install kubernetes components
       block:
+        - debug:
+            msg: "Downloading and installing kubernetes components"
+
         - name: Download minikube
           get_url:
             url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64

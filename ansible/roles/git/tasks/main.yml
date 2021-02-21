@@ -2,7 +2,7 @@
 - name: Configure git
   block:
     - debug:
-        msg: "Configuring git with global user {{ git_username }} and global email {{ git_email }}"
+        msg: "Configure git with global user {{ git_username }} and global email {{ git_email }}"
 
     - name: Apply base gitconfig
       get_url:

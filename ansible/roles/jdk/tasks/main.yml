@@ -2,6 +2,9 @@
 - name: Install and configure JDKs
   become: yes
   block:
+    - debug:
+        msg: "Install and configure JDKs"
+
     - name: Install JDKs
       apt:
         name: "{{ item.name }}"

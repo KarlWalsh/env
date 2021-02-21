@@ -1,7 +1,12 @@
 ---
 - name: Install fonts
-  become: yes
-  apt:
-    name: "{{ item.name }}"
-    state: present
-  with_items: "{{ fonts }}"
+  block:
+    - debug:
+        msg: "Install fonts"
+
+    - name: Install fonts (apt)
+      become: yes
+      apt:
+        name: "{{ item.name }}"
+        state: present
+      with_items: "{{ fonts }}"
