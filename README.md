@@ -13,14 +13,16 @@ This script does the following
 
 You will be asked for your password when it performs a `sudo apt update` and once again when ansible asks for the become password.
 
-### Configuring git
+## Configure git
 
-Update global git config using the tag `configure-git` - this will also replace the existing global `~/.gitignore` file.
+Update global git config - this will replace the existing global `~/.gitconfig` and `~/.gitignore` files.
 
-    ansible-playbook ansible/development.yml --tags configure-git -e "git_username='Groovy Gorilla' git_email=groovy.gorilla@ubuntu.com"
+    cd ~/projects/env
+    make configure-git GIT_USERNAME="Groovy Gorilla" GIT_EMAIL=groovy.gorilla@ubuntu.com
 
-### Configuring swap
+## Configure swap
 
-Update an existing swapfile at `/swapfile` using the tag `configure-swap`.
+Update an existing swapfile at `/swapfile`. The variable `SWAP_SIZE` is in gigabytes. 
 
-    ansible-playbook ansible/development.yml -K --tags configure-swap -e "swap_space_gig=2"
+    cd ~/projects/env
+    make configure-swap SWAP_SIZE=2

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 sudo apt-get update
-sudo apt install -y git ansible
+sudo apt install -y git make ansible
 
 PROJECTS=projects
 GIT_USER=karlwalsh
@@ -19,8 +19,7 @@ fi
 
 cd $GIT_REPO || exit
 
-ansible-galaxy collection install -r ansible/requirements.yml
-ansible-playbook -v ansible/development.yml --ask-become-pass
+make install
 
 sudo apt update
 sudo apt -y full-upgrade
