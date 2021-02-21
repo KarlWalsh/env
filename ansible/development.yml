@@ -393,6 +393,11 @@
           channel: latest/stable
         become: yes
 
+      - name: Install Spotify
+        snap:
+          name: spotify
+        become: yes
+
       - name: Install tools
         apt:
           pkg:
