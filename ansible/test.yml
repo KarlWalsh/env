@@ -1,0 +1,14 @@
+- name: Setup local development environment
+  hosts: localhost
+  roles:
+    - {role: development, tags: ['development']}
+    - {role: tools, tags: ['tools']}
+    - {role: docker, tags: ['docker']}
+    - {role: swap, tags: ['never', 'configure-swap']}
+    - {role: git, tags: ['never', 'configure-git']}
+    - {role: jdk, tags: ['jdk']}
+    - {role: fonts, tags: ['fonts']}
+    - {role: terminal, tags: ['terminal']}
+    - {role: kubernetes, tags: ['k8s']}
+  vars_files:
+    - vars/vars.yml

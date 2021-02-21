@@ -1,7 +1,7 @@
 #!/bin/sh
 
-sudo apt-get update
-sudo apt install -y git make ansible
+sudo apt update
+sudo apt install -y git make ansible software-properties-common
 
 PROJECTS=projects
 GIT_USER=karlwalsh

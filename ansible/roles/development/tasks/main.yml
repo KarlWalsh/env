@@ -1,0 +1,69 @@
+---
+- name: Install development apps and tools - snaps
+  become: yes
+  snap:
+    name: "{{ item.name }}"
+    channel: "{{ item.channel | default('latest/stable') }}"
+    classic: "{{ item.classic | default('no') | bool }}"
+  with_items: "{{ snaps_development }}"
+
+- name: Install development apps and tools - apt
+  become: yes
+  apt:
+    name: "{{ item.name }}"
+    state: present
+  with_items: "{{ apt_development }}"
+
+- name: Install and configure IntelliJ IDEA Ultimate
+  block:
+    - name: Determine which version we installed
+      command: snap info intellij-idea-ultimate
+      register: intellij_idea_ultimate_snap_info
+      changed_when: False
+
+    - name: Extract version number from snap installation info
+      set_fact:
+        idea_version: "{{ intellij_idea_ultimate_snap_info.stdout | regex_search(regex, '\\1') | first}}"
+      vars:
+        regex: 'installed:\s+(\d+\.\d+)\.\d+'
+
+    - debug:
+        msg: "We installed version {{ idea_version }} of IntelliJ IDEA Ultimate"
+
+    - name: Ensure IntelliJ IDEA config directory exists
+      file:
+        path: "{{ home }}/.config/JetBrains/IntelliJIdea{{ idea_version }}"
+        state: directory
+      register: intellij_idea_config_directory
+
+    - debug:
+        msg: "IntelliJ IDEA config directory exists at {{ intellij_idea_config_directory.path }}"
+
+    - name: "Configure IntelliJ IDEA - idea.properties"
+      copy:
+        dest: "{{ intellij_idea_config_directory.path }}/idea.properties"
+        content: |
+          idea.max.intellisense.filesize=5000
+
+    - name: Ensure IntelliJ IDEA config codestyles directory exists
+      file:
+        path: "{{ intellij_idea_config_directory.path }}/codestyles"
+        state: directory
+      register: intellij_idea_codestyles_directory
+
+    - debug:
+        msg: "IntelliJ IDEA codestyles directory is {{ intellij_idea_codestyles_directory.path }}"
+
+    - name: "Configure IntelliJ IDEA - codestyles"
+      get_url:
+        url: https://raw.githubusercontent.com/karlwalsh/env/master/config/idea/codestyles/Default.xml
+        dest: "{{ intellij_idea_codestyles_directory.path }}/Default.xml"
+
+- name: Configure vim
+  copy:
+    dest: "{{ home }}/.vimrc"
+    content: |
+      set tabstop=4
+      set softtabstop=4
+      set shiftwidth=4
+      set expandtab

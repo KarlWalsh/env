@@ -1,0 +1,27 @@
+---
+- name: Configure git
+  block:
+    - debug:
+        msg: "Configuring git with global user {{ git_username }} and global email {{ git_email }}"
+
+    - name: Apply base gitconfig
+      get_url:
+        url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitconfig
+        dest: "{{ home }}/.gitconfig"
+
+    - name: Configure git username
+      community.general.git_config:
+        name: user.name
+        value: "{{ git_username }}"
+        scope: global
+
+    - name: Configure git email address
+      community.general.git_config:
+        name: user.email
+        value: "{{ git_email }}"
+        scope: global
+
+    - name: Configure global gitignore
+      get_url:
+        url: https://raw.githubusercontent.com/karlwalsh/env/master/config/git/gitignore
+        dest: "{{ home }}/.gitignore"

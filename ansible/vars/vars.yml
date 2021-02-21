@@ -1,0 +1,46 @@
+---
+user: "{{ ansible_user_id }}"
+home: "{{ lookup('env','HOME') }}"
+projects: "projects"
+projects_dir: "{{ home }}/{{ projects }}"
+
+snaps_tools:
+  - name: 1password
+    channel: latest/edge
+  - name: hey-mail
+  - name: spotify
+
+apt_tools:
+  - name: htop
+  - name: neofetch
+
+snaps_development:
+  - name: intellij-idea-ultimate
+    classic: yes
+
+  - name: insomnia
+
+apt_development:
+  - name: vim
+  - name: maven
+  - name: httpie
+  - name: curl
+  - name: glogg
+
+apt_terminal:
+  - name: tilda
+  - name: tmux
+  - name: tmuxinator
+  - name: zsh
+
+jdks:
+  - name: openjdk-8-jdk
+  - name: openjdk-11-jdk
+
+default_jdk:
+  name: openjdk-11-jdk
+  path: /usr/lib/jvm/java-11-openjdk-amd64/bin/
+
+fonts:
+  - name: fonts-firacode
+  - name: fonts-liberation

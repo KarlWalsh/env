@@ -1,0 +1,67 @@
+---
+- name: Install and configure kubernetes
+  block:
+    - name: Get stable kubectl version
+      uri:
+        url: https://dl.k8s.io/release/stable.txt
+        return_content: yes
+      register: kubectl_version
+
+    - name: Download and install kubernetes components
+      block:
+        - name: Download minikube
+          get_url:
+            url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+            dest: /usr/local/bin/minikube
+
+        - name: Install minikube
+          file:
+            path: /usr/local/bin/minikube
+            mode: '0755'
+
+        - name: Download kubectl {{ kubectl_version.content }}
+          get_url:
+            url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
+            dest: /usr/local/bin/kubectl
+
+        - name: Make kubectl executable
+          file:
+            path: /usr/local/bin/kubectl
+            mode: '0755'
+
+        - name: Download kubectx
+          get_url:
+            url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx
+            dest: /usr/local/bin/kubectx
+          become: yes
+
+        - name: Make kubectx executable
+          file:
+            path: /usr/local/bin/kubectx
+            mode: '0755'
+
+        - name: Download kubens
+          get_url:
+            url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens
+            dest: /usr/local/bin/kubens
+
+        - name: Make kubens executable
+          file:
+            path: /usr/local/bin/kubens
+            mode: '0755'
+      become: yes
+
+    - name: Ensure zsh completions directory is available
+      file:
+        path: "{{ projects_dir }}/oh-my-zsh/completions"
+        state: directory
+
+    - name: Install kubectx zsh completions
+      get_url:
+        url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubectx.zsh
+        dest: "{{ projects_dir }}/oh-my-zsh/completions/_kubectx.zsh"
+
+    - name: Install kubens zsh completions
+      get_url:
+        url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubens.zsh
+        dest: "{{ projects_dir }}/oh-my-zsh/completions/_kubens.zsh"

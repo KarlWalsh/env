@@ -1,0 +1,18 @@
+---
+- name: Install and configure JDKs
+  become: yes
+  block:
+    - name: Install JDKs
+      apt:
+        name: "{{ item.name }}"
+      with_items: "{{ jdks }}"
+
+    - name: "Select default java runtime in '{{ default_jdk.path }}'"
+      alternatives:
+        name: java
+        path: "{{ default_jdk.path }}/java"
+
+    - name: "Select default jdk in '{{ default_jdk.path }}'"
+      alternatives:
+        name: javac
+        path: "{{ default_jdk.path }}/javac"

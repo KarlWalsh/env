@@ -1,0 +1,15 @@
+---
+- name: Install apps and tools - snaps
+  become: yes
+  snap:
+    name: "{{ item.name }}"
+    channel: "{{ item.channel | default('latest/stable') }}"
+    classic: "{{ item.classic | default('no') }}"
+  with_items: "{{ snaps_tools }}"
+
+- name: Install apps and tools - apt
+  become: yes
+  apt:
+    name: "{{ item.name }}"
+    state: present
+  with_items: "{{ apt_tools }}"
