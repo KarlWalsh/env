@@ -1,0 +1,20 @@
+---
+- name: Install 1password
+  become: yes
+  snap:
+    name: 1password
+    channel: latest/edge
+    state: present
+
+- name: "Ensure autostart directory exists at '{{ home }}/.config/autostart'"
+  file:
+    path: "{{ home }}/.config/autostart"
+    state: directory
+  register: autostart_dir
+
+- name: Set 1password to autostart
+  file:
+    src: "{{ config_dir }}/1password/1password.desktop"
+    dest: "{{ autostart_dir.path }}/1password.desktop"
+    state: link
+    force: yes

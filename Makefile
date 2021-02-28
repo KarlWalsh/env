@@ -81,6 +81,11 @@ kubernetes: ## Install and configure kubernetes tools
 	@$(ANSIBLE) --tags kubernetes
 
 
+.PHONY: 1password
+1password: ## Install and configure 1Password
+	@$(ANSIBLE) --tags 1password
+
+
 .PHONY: configure-git
 configure-git: ## Configure global .gitconfig and .gitignore - Provide arguments GIT_USERNAME="some name" and GIT_EMAIL=you@mail.com
 	$(call check_defined, GIT_USERNAME)
