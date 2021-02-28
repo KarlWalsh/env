@@ -1,0 +1,25 @@
+---
+- name: Add agornostal/ulauncher ppa so we can install ulauncher
+  become: yes
+  apt_repository:
+    repo: 'ppa:agornostal/ulauncher'
+    state: present
+
+- name: Install ulauncher
+  become: yes
+  apt:
+    name: ulauncher
+    state: present
+
+- name: "Ensure autostart directory exists at '{{ home }}/.config/autostart'"
+  file:
+    path: "{{ home }}/.config/autostart"
+    state: directory
+  register: autostart_dir
+
+- name: Set ulauncher to autostart
+  file:
+    src: "{{ config_dir }}/ulauncher/ulauncher.desktop"
+    dest: "{{ autostart_dir.path }}/ulauncher.desktop"
+    state: link
+    force: yes
