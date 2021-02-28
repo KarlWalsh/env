@@ -13,14 +13,23 @@ __check_defined = \
     $(if $(value $1),, \
       $(error Undefined $1$(if $2, ($2))))
 
-ANSIBLE_GALAXY = ansible-galaxy install -r ansible/requirements.yml
-ANSIBLE_PLAYBOOK = ansible-playbook ansible/development.yml -v --ask-become-pass
+ANSIBLE_GALAXY = ansible-galaxy collection install -r ansible/requirements/collections.yml
+ANSIBLE_PLAYBOOK = ansible-playbook ansible/local-machine.yml -v --ask-become-pass
 ANSIBLE = $(ANSIBLE_GALAXY) && $(ANSIBLE_PLAYBOOK)
 
 .PHONY: help
 help: ## This help page
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+
+.PHONY: ansible-requirements
+galaxy: ##Install ansible requirements
+	@$(ANSIBLE_GALAXY)
+
+.PHONY: bootstrap
+bootstrap: ##Install dependencies and then install everything
+	@sudo apt install -y ansible software-properties-common
+	@make install
 
 .PHONY: install
 install: ## Install everything, and configure all but git and swap
@@ -60,6 +69,16 @@ fonts: ## Install fonts
 .PHONY: terminal
 terminal: ## Install and configure terminal
 	@$(ANSIBLE) --tags terminal
+
+
+.PHONY: alacritty
+alacritty: ## Install and configure alacritty
+	@$(ANSIBLE) --tags alacritty
+
+
+.PHONY: kubernetes
+kubernetes: ## Install and configure kubernetes tools
+	@$(ANSIBLE) --tags kubernetes
 
 
 .PHONY: configure-git

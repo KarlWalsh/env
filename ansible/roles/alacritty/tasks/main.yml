@@ -1,0 +1,25 @@
+---
+- name: Add aslatter ppa so we can install alacritty
+  become: yes
+  apt_repository:
+    repo: 'ppa:aslatter/ppa'
+    state: present
+
+- name: Install alacritty
+  become: yes
+  apt:
+    name: alacritty
+    state: present
+
+- name: "Ensure alacritty config directory exists at '{{ home }}/.config/alacritty'"
+  file:
+    path: "{{ home }}/.config/alacritty"
+    state: directory
+  register: alacritty_config_directory
+
+- name: Configure alacritty
+  file:
+    src: "{{ config_dir }}/alacritty/alacritty.yml"
+    dest: "{{ alacritty_config_directory.path }}/alacritty.yml"
+    state: link
+    force: yes

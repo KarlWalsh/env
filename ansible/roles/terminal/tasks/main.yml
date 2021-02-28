@@ -23,9 +23,11 @@
         dest: "{{ projects_dir }}/z"
 
     - name: Configure .zshrc
-      get_url:
-        url: https://raw.githubusercontent.com/karlwalsh/env/master/config/zsh/zshrc
+      file:
+        src: "{{ config_dir }}/zsh/zshrc"
         dest: "{{ home }}/.zshrc"
+        state: link
+        force: yes
 
     - name: Switch shell to zsh
       become: yes
@@ -33,11 +35,12 @@
         name: "{{ user }}"
         shell: /bin/zsh
 
-
     - name: Configure tmux
-      get_url:
-        url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmux/tmux.conf
+      file:
+        src: "{{ config_dir }}/tmux/tmux.conf"
         dest: "{{ home }}/.tmux.conf"
+        state: link
+        force: yes
 
     - name: Ensure tmuxinator config directory exists
       file:
@@ -45,6 +48,8 @@
         state: directory
 
     - name: Configure tmuxinator
-      get_url:
-        url: https://raw.githubusercontent.com/karlwalsh/env/master/config/tmuxinator/default.yml
+      file:
+        src: "{{ config_dir }}/tmuxinator/default.yml"
         dest: "{{ home }}/.config/tmuxinator/default.yml"
+        state: link
+        force: yes

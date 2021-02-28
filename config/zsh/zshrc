@@ -1,32 +1,28 @@
 LANG=en_GB.UTF-8
-ZSH=$HOME/projects/oh-my-zsh
+PROJECTS=$HOME/projects
+ENV=$PROJECTS/env
+ZSH=$PROJECTS/oh-my-zsh
+
 ZSH_THEME="robbyrussell"
 CASE_SENSITIVE="true"
 EDITOR='vim'
 
 plugins=(git sudo)
 
-source $ZSH/oh-my-zsh.sh
-. ~/projects/z/z.sh
+OHMYZSH_SRC=$ZSH/oh-my-zsh.sh
+[ -f $OHMYZSH_SRC ] && source $OHMYZSH_SRC
 
-# Cheat Sheet
-function cheat {
-    curl cheat.sh/"$1"
-}
+Z_SRC=$PROJECTS/z/z.sh
+[ -f $Z_SRC ] && source $Z_SRC
 
-# kubectl
-alias k=kubectl
-source <(kubectl completion zsh)
-complete -F __start_kubectl k
+CHEATSHEET_SRC=$ENV/config/zsh/cheatsheet
+[ -f $CHEATSHEET_SRC ] && source $CHEATSHEET_SRC
 
-# Aliases - terminal
-alias zshconfig="edit ~/.zshrc"
-alias tx="tmuxinator"
-alias open="xdg-open"
+KUBECTL_SRC=$ENV/config/kubernetes/zsh/kubectl
+[ -f $KUBECTL_SRC ] && source $KUBECTL_SRC
 
-# Aliases - development
-alias mi="mvn install"
-alias mci="mvn clean install"
-alias mist="mvn install -DskipTests"
-alias mcist="mvn clean install -DskipTests"
-alias gw="./gradlew"
+MANAGED_ALIASES_SRC=$ENV/config/zsh/aliases
+[ -f $MANAGED_ALIASES_SRC ] && source $MANAGED_ALIASES_SRC
+
+LOCAL_ALIASES_SRC=$HOME/.local-aliases
+[ -f $LOCAL_ALIASES_SRC ] && source $LOCAL_ALIASES_SRC

@@ -2,7 +2,7 @@
 
 ## Download and execute for a fresh install
 
-    wget -qO- https://raw.githubusercontent.com/karlwalsh/env/master/install.sh | sh
+    wget -qO- https://raw.githubusercontent.com/karlwalsh/env/master/bootstrap.sh | sh
 
 This script does the following
 1. Install dependencies (git and ansible)
@@ -26,3 +26,35 @@ Update an existing swapfile at `/swapfile`. The variable `SWAP_SIZE` is in gigab
 
     cd ~/projects/env
     make configure-swap SWAP_SIZE=2
+
+## Install and configure Alacritty
+I'm currently experimenting with Alacritty so it isn't installed/configured by default. To do so execute the `alacritty` make target
+
+```shell
+make alacritty
+```
+
+## TODO
+
+- Use notifiers to handle service restarts
+- Enable wayland
+- zsh & oh-my-zsh for root
+- Install virtualbox
+- Better handling of dotfiles
+    - chezmoi - https://github.com/twpayne/chezmoi
+    - dotdrop - https://github.com/deadc0de6/dotdrop
+    - dotbare - https://github.com/kazhala/dotbare
+    - Use ansible to handle symlinks? - should make it easier to manage
+      Use a variable for the src and dest root path
+      ```
+      - name: Symlink .tmux.conf
+        file:
+        src: "~/projects/env/ansible/roles/tmux/files/tmux.conf"
+        dest: "~/.tmux.conf"
+        state: link
+      ```
+    - Take inspiration from
+        - https://github.com/Addvilz/dots
+        - https://github.com/driesvints/dotfiles
+        - https://github.com/sloria/dotfiles
+- Desktop wallpapers

@@ -62,12 +62,12 @@
         path: "{{ projects_dir }}/oh-my-zsh/completions"
         state: directory
 
-    - name: Install kubectx zsh completions
-      get_url:
-        url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubectx.zsh
-        dest: "{{ projects_dir }}/oh-my-zsh/completions/_kubectx.zsh"
-
-    - name: Install kubens zsh completions
-      get_url:
-        url: https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubens.zsh
-        dest: "{{ projects_dir }}/oh-my-zsh/completions/_kubens.zsh"
+    - name: Symlink kubectx zsh completions
+      file:
+        src: "{{ config_dir }}/kubernetes/completions/{{ item.name }}"
+        dest: "{{ projects_dir }}/oh-my-zsh/completions/_{{ item.name }}"
+        state: link
+        force: yes
+      with_items:
+        - name: kubectx.zsh
+        - name: kubens.zsh

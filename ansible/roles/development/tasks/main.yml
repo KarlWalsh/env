@@ -48,10 +48,11 @@
             msg: "IntelliJ IDEA config directory exists at {{ intellij_idea_config_directory.path }}"
 
         - name: "Configure IntelliJ IDEA - idea.properties"
-          copy:
+          file:
+            src: "{{ config_dir }}/idea/idea.properties"
             dest: "{{ intellij_idea_config_directory.path }}/idea.properties"
-            content: |
-              idea.max.intellisense.filesize=5000
+            state: link
+            force: yes
 
         - name: Ensure IntelliJ IDEA config codestyles directory exists
           file:
@@ -63,15 +64,15 @@
             msg: "IntelliJ IDEA codestyles directory is {{ intellij_idea_codestyles_directory.path }}"
 
         - name: "Configure IntelliJ IDEA - codestyles"
-          get_url:
-            url: https://raw.githubusercontent.com/karlwalsh/env/master/config/idea/codestyles/Default.xml
+          file:
+            src: "{{ config_dir }}/idea/codestyles/Default.xml"
             dest: "{{ intellij_idea_codestyles_directory.path }}/Default.xml"
+            state: link
+            force: yes
 
     - name: Configure vim
-      copy:
+      file:
+        src: "{{ config_dir }}/vim/vimrc"
         dest: "{{ home }}/.vimrc"
-        content: |
-          set tabstop=4
-          set softtabstop=4
-          set shiftwidth=4
-          set expandtab
+        state: link
+        force: yes

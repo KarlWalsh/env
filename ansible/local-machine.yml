@@ -7,7 +7,8 @@
     - { role: jdk, tags: [ 'jdk' ] }
     - { role: fonts, tags: [ 'fonts' ] }
     - { role: terminal, tags: [ 'terminal' ] }
-    - { role: kubernetes, tags: [ 'k8s' ] }
+    - { role: kubernetes, tags: [ 'kubernetes' ] }
+    - { role: alacritty, tags: [ 'never', 'alacritty' ] }
     - { role: swap, tags: [ 'never', 'configure-swap' ] }
     - { role: git, tags: [ 'never', 'configure-git' ] }
   vars_files:
