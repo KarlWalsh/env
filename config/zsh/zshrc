@@ -1,8 +1,8 @@
 LANG=en_GB.UTF-8
-PROJECTS=$HOME/projects
-ENV=$PROJECTS/env
-OHMYZSH=$ENV/modules/oh-my-zsh
-Z=$ENV/modules/z
+ENV=$HOME/.env
+MODULES=$ENV/modules
+OHMYZSH=$MODULES/oh-my-zsh
+Z=$MODULES/z
 
 ZSH_THEME="robbyrussell"
 CASE_SENSITIVE="true"

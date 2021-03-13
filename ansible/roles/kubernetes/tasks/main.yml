@@ -59,13 +59,13 @@
 
     - name: Ensure zsh completions directory is available
       file:
-        path: "{{ projects_dir }}/oh-my-zsh/completions"
+        path: "{{ modules_dir }}/oh-my-zsh/completions"
         state: directory
 
     - name: Symlink kubectx zsh completions
       file:
         src: "{{ config_dir }}/kubernetes/completions/{{ item.name }}"
-        dest: "{{ projects_dir }}/oh-my-zsh/completions/_{{ item.name }}"
+        dest: "{{ modules_dir }}/oh-my-zsh/completions/_{{ item.name }}"
         state: link
         force: yes
       with_items:

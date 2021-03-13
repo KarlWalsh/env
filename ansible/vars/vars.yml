@@ -1,9 +1,8 @@
 ---
 user: "{{ ansible_user_id }}"
 home: "{{ lookup('env','HOME') }}"
-projects: "projects"
-projects_dir: "{{ home }}/{{ projects }}"
-env_dir: "{{ projects_dir }}/env"
+env_dir: "{{ home }}/.env"
+modules_dir: "{{ env_dir }}/modules"
 config_dir: "{{ env_dir }}/config"
 target_config_dir: "{{ home }}/.config"
 

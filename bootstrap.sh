@@ -1,25 +1,21 @@
 #!/bin/sh
 
-PROJECTS=$HOME/projects
-GIT_USER=karlwalsh
-GIT_REPO=env
-URL=https://github.com/$GIT_USER/$GIT_REPO.git
+ENV=$HOME/.env
+URL=https://github.com/karlwalsh/env.git
 
 echo "Bootstrapping local machine - first updating, and installing dependencies"
 
 sudo apt update
 sudo apt install -y git make
 
-mkdir -p $PROJECTS
-cd $PROJECTS || exit
-if [ ! -d "$GIT_REPO" ] ; then
-  echo "$PROJECTS/$GIT_REPO doesn't exist, will clone from $URL"
-  git clone --recurse-submodules $URL $GIT_REPO
+if [ ! -d "$ENV" ] ; then
+  echo "$ENV doesn't exist, will clone from $URL"
+  git clone --recurse-submodules $URL $ENV
 else
-  echo "$GIT_REPO project already exists, no need to clone"
+  echo "$ENV project already exists, no need to clone"
 fi
 
-cd $GIT_REPO || exit
+cd $ENV || exit
 
 make bootstrap
 
