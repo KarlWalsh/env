@@ -14,6 +14,7 @@ snaps_tools:
 apt_tools:
   - name: htop
   - name: neofetch
+  - name: dconf-editor
 
 snaps_development:
   - name: intellij-idea-ultimate
