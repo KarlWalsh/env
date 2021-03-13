@@ -23,83 +23,83 @@ help: ## This help page
 
 .PHONY: bootstrap
 bootstrap: ##Install dependencies and then install everything
-	@sudo apt update
-	@sudo apt install -y ansible software-properties-common python3-psutil
+	sudo apt update
+	sudo apt install -y ansible software-properties-common python3-psutil
 	make ansible-requirements
 	make install
-	@sudo apt update
-	@sudo apt -y full-upgrade
-	@sudo apt -y autoremove
+	sudo apt update
+	sudo apt -y full-upgrade
+	sudo apt -y autoremove
 
 
 .PHONY: ansible-requirements
 ansible-requirements: ##Install ansible requirements
-	@$(ANSIBLE_GALAXY)
+	$(ANSIBLE_GALAXY)
 
 
 .PHONY: install
 install: ## Install everything, and configure all but git and swap
-	@$(ANSIBLE_PLAYBOOK)
+	$(ANSIBLE_PLAYBOOK)
 
 
 .PHONY: tools
 tools: ## Install and configure apps and tools
-	@$(ANSIBLE_PLAYBOOK) --tags tools
+	$(ANSIBLE_PLAYBOOK) --tags tools
 
 
 .PHONY: development
 development: ## Install and configure development apps and tools
-	@$(ANSIBLE_PLAYBOOK) --tags development
+	$(ANSIBLE_PLAYBOOK) --tags development
 
 
 .PHONY: jdk
 jdk: ## Install and configure jdks
-	@$(ANSIBLE_PLAYBOOK) --tags jdk
+	$(ANSIBLE_PLAYBOOK) --tags jdk
 
 
 .PHONY: docker
 docker: ## Install and configure docker
-	@$(ANSIBLE_PLAYBOOK) --tags docker
+	$(ANSIBLE_PLAYBOOK) --tags docker
 
 
 .PHONY: k8s
 k8s: ## Install and configure kubernetes
-	@$(ANSIBLE_PLAYBOOK) --tags k8s
+	$(ANSIBLE_PLAYBOOK) --tags k8s
 
 
 .PHONY: fonts
 fonts: ## Install fonts
-	@$(ANSIBLE_PLAYBOOK) --tags fonts
+	$(ANSIBLE_PLAYBOOK) --tags fonts
 
 
 .PHONY: terminal
 terminal: ## Install and configure terminal
-	@$(ANSIBLE_PLAYBOOK) --tags terminal
+	$(ANSIBLE_PLAYBOOK) --tags terminal
 
 
 .PHONY: alacritty
 alacritty: ## Install and configure alacritty
-	@$(ANSIBLE_PLAYBOOK) --tags alacritty
+	$(ANSIBLE_PLAYBOOK) --tags alacritty
 
 
 .PHONY: kubernetes
 kubernetes: ## Install and configure kubernetes tools
-	@$(ANSIBLE_PLAYBOOK) --tags kubernetes
+	$(ANSIBLE_PLAYBOOK) --tags kubernetes
 
 
 .PHONY: 1password
 1password: ## Install and configure 1Password
-	@$(ANSIBLE_PLAYBOOK) --tags 1password
+	$(ANSIBLE_PLAYBOOK) --tags 1password
 
 
 .PHONY: rofi
 rofi: ## Install and configure rofi
-	@$(ANSIBLE_PLAYBOOK) --tags rofi
+	$(ANSIBLE_PLAYBOOK) --tags rofi
 
 
 .PHONY: gnome
 gnome: ## Configure gnome
-	@$(ANSIBLE_PLAYBOOK) --tags gnome
+	$(ANSIBLE_PLAYBOOK) --tags gnome
 
 
 .PHONY: configure-git
@@ -107,14 +107,14 @@ configure-git: ## Configure global .gitconfig and .gitignore - Provide arguments
 	$(call check_defined, GIT_USERNAME)
 	$(call check_defined, GIT_EMAIL)
 
-	@$(ANSIBLE_PLAYBOOK) --tags configure-git -e "git_username='$(GIT_USERNAME)' git_email=$(GIT_EMAIL)"
+	$(ANSIBLE_PLAYBOOK) --tags configure-git -e "git_username='$(GIT_USERNAME)' git_email=$(GIT_EMAIL)"
 
 
 .PHONY: configure-swap
 configure-swap: ## Update an existing /swapfile with size in gigabytes provided by the argument SWAP_SIZE=2
 	$(call check_defined, SWAP_SIZE)
 
-	@$(ANSIBLE_PLAYBOOK) --tags configure-swap -e "swap_space_gig=$(SWAP_SIZE)"
+	$(ANSIBLE_PLAYBOOK) --tags configure-swap -e "swap_space_gig=$(SWAP_SIZE)"
 
 
 .DEFAULT_GOAL := help
