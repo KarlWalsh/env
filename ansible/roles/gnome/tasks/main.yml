@@ -30,6 +30,10 @@
                   description: "Drop <Super>Space so we can map it to rofi drun"
                   key: "/org/gnome/desktop/wm/keybindings/switch-input-source"
                   value: "['XF86Keyboard']"
+                - name: "Minimize"
+                  description: "Drop <Super>h so we can map it to htop"
+                  key: "/org/gnome/desktop/wm/keybindings/minimize"
+                  value: "['']"
 
             - name: Add custom keybindings
               vars:
@@ -53,6 +57,9 @@
                   - name: Rofi themes
                     command: rofi-theme-selector
                     binding: <Super>t
+                  - name: htop
+                    command: alacritty -e htop
+                    binding: <Super>h
 
               block:
                 - debug:
