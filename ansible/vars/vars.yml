@@ -5,6 +5,7 @@ projects: "projects"
 projects_dir: "{{ home }}/{{ projects }}"
 env_dir: "{{ projects_dir }}/env"
 config_dir: "{{ env_dir }}/config"
+target_config_dir: "{{ home }}/.config"
 
 snaps_tools:
   - name: hey-mail

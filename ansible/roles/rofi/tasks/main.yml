@@ -1,0 +1,18 @@
+---
+- name: Install and configure rofi
+  block:
+    - debug:
+        msg: "Install and configure rofi"
+
+    - name: Install rofi
+      become: yes
+      apt:
+        name: rofi
+        state: present
+
+    - name: Symlink rofi config
+      file:
+        src: "{{ config_dir }}/rofi"
+        dest: "{{ target_config_dir }}/rofi"
+        state: link
+        force: yes
