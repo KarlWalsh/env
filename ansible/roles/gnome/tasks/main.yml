@@ -1,0 +1,89 @@
+---
+- name: Configure Gnome
+  block:
+    - debug:
+        msg: "Configure Gnome"
+
+    - name: Configure Gnome keybindings
+      block:
+        - debug:
+            msg: "Configure Gnome keybindings"
+
+        - name: Reconfigure built-in keybindings
+          block:
+            - debug:
+                msg: "Reconfigure built-in keybindings"
+
+            - dconf:
+                key: "{{ item.key }}"
+                value: "{{ item.value }}"
+              with_items:
+                - name: "File Browser"
+                  description: "This is disabled by default, set it to <Super>f"
+                  key: "/org/gnome/settings-daemon/plugins/media-keys/home"
+                  value: "['<Super>f']"
+                - name: "Toggle Overview"
+                  description: "Drop <Super>s so we can map it to rofi ssh"
+                  key: "/org/gnome/shell/keybindings/toggle-overview"
+                  value: "['']"
+                - name: "Switch Input Source"
+                  description: "Drop <Super>Space so we can map it to rofi drun"
+                  key: "/org/gnome/desktop/wm/keybindings/switch-input-source"
+                  value: "['XF86Keyboard']"
+
+            - name: Add custom keybindings
+              vars:
+                prefix: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings"
+                keybindings:
+                  - name: Terminal
+                    command: alacritty
+                    binding: <Super>Return
+                  - name: Rofi window
+                    command: rofi -show window -show-icons
+                    binding: <Super>w
+                  - name: Rofi drun
+                    command: rofi -show drun -show-icons
+                    binding: <Super>Space
+                  - name: Rofi run
+                    command: rofi -show run -show-icons
+                    binding: <Super>r
+                  - name: Rofi ssh
+                    command: rofi -show ssh -show-icons
+                    binding: <Super>s
+                  - name: Rofi themes
+                    command: rofi-theme-selector
+                    binding: <Super>t
+
+              block:
+                - debug:
+                    msg: "Add custom keybindings"
+
+                - name: Add custom keybinding (name)
+                  dconf:
+                    key: "{{ prefix }}/custom{{ index }}/binding"
+                    value: "'{{ item.binding }}'"
+                  loop: "{{ keybindings }}"
+                  loop_control:
+                    index_var: index
+
+                - name: Add custom keybinding (command)
+                  dconf:
+                    key: "{{ prefix }}/custom{{ index }}/command"
+                    value: "'{{ item.command }}'"
+                  loop: "{{ keybindings }}"
+                  loop_control:
+                    index_var: index
+
+                - name: Add custom keybinding (binding)
+                  dconf:
+                    key: "{{ prefix }}/custom{{ index }}/binding"
+                    value: "'{{ item.binding }}'"
+                  loop: "{{ keybindings }}"
+                  loop_control:
+                    index_var: index
+
+                - name: Enable custom keybindings
+                  dconf:
+                    key: /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings
+                    #This value needs to be on a single line, carriage returns in the output causes Gnome to fail spectacularly
+                    value: "[{% for index in range(keybindings | length) %}'{{ prefix }}/custom{{ index }}/'{% if not loop.last %},{% endif %}{% endfor %}]"

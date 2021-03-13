@@ -28,8 +28,12 @@ galaxy: ##Install ansible requirements
 
 .PHONY: bootstrap
 bootstrap: ##Install dependencies and then install everything
-	@sudo apt install -y ansible software-properties-common
+	@sudo apt update
+	@sudo apt install -y ansible software-properties-common python3-psutil
 	@make install
+	@sudo apt update
+	@sudo apt -y full-upgrade
+	@sudo apt -y autoremove
 
 .PHONY: install
 install: ## Install everything, and configure all but git and swap
@@ -89,6 +93,11 @@ kubernetes: ## Install and configure kubernetes tools
 .PHONY: rofi
 rofi: ## Install and configure rofi
 	@$(ANSIBLE) --tags rofi
+
+
+.PHONY: gnome
+gnome: ## Configure gnome
+	@$(ANSIBLE) --tags gnome
 
 
 .PHONY: configure-git
