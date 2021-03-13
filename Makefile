@@ -33,7 +33,7 @@ bootstrap: ##Install dependencies and then install everything
 
 
 .PHONY: ansible-requirements
-galaxy: ##Install ansible requirements
+ansible-requirements: ##Install ansible requirements
 	@$(ANSIBLE_GALAXY)
 
 
