@@ -1,7 +1,8 @@
 LANG=en_GB.UTF-8
 PROJECTS=$HOME/projects
 ENV=$PROJECTS/env
-ZSH=$PROJECTS/oh-my-zsh
+OHMYZSH=$ENV/modules/oh-my-zsh
+Z=$ENV/modules/z
 
 ZSH_THEME="robbyrussell"
 CASE_SENSITIVE="true"
@@ -9,10 +10,10 @@ EDITOR='vim'
 
 plugins=(git sudo)
 
-OHMYZSH_SRC=$ZSH/oh-my-zsh.sh
+OHMYZSH_SRC=$OHMYZSH/oh-my-zsh.sh
 [ -f $OHMYZSH_SRC ] && source $OHMYZSH_SRC
 
-Z_SRC=$PROJECTS/z/z.sh
+Z_SRC=$Z/z.sh
 [ -f $Z_SRC ] && source $Z_SRC
 
 CHEATSHEET_SRC=$ENV/config/zsh/cheatsheet
