@@ -28,7 +28,6 @@ apt_development:
   - name: glogg
 
 apt_terminal:
-  - name: tilda
   - name: tmux
   - name: tmuxinator
   - name: zsh
