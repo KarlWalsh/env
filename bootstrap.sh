@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ENV=$HOME/.env
-URL=https://github.com/karlwalsh/env.git
+URL=git@github.com:karlwalsh/env.git
 
 echo "Bootstrapping local machine - first updating, and installing dependencies"
 
