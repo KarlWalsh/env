@@ -9,7 +9,6 @@
     - { role: terminal, tags: [ 'terminal' ] }
     - { role: kubernetes, tags: [ 'kubernetes' ] }
     - { role: 1password, tags: [ '1password' ] }
-    - { role: ulauncher, tags: [ 'ulauncher' ] }
     - { role: alacritty, tags: [ 'never', 'alacritty' ] }
     - { role: swap, tags: [ 'never', 'configure-swap' ] }
     - { role: git, tags: [ 'never', 'configure-git' ] }
