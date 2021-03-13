@@ -14,7 +14,7 @@ mkdir -p $PROJECTS
 cd $PROJECTS || exit
 if [ ! -d "$GIT_REPO" ] ; then
   echo "$PROJECTS/$GIT_REPO doesn't exist, will clone from $URL"
-  git clone $URL $GIT_REPO
+  git clone --recurse-submodules $URL $GIT_REPO
 else
   echo "$GIT_REPO project already exists, no need to clone"
 fi
