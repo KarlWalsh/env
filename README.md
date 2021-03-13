@@ -27,13 +27,6 @@ Update an existing swapfile at `/swapfile`. The variable `SWAP_SIZE` is in gigab
     cd ~/projects/env
     make configure-swap SWAP_SIZE=2
 
-## Install and configure Alacritty
-I'm currently experimenting with Alacritty so it isn't installed/configured by default. To do so execute the `alacritty` make target
-
-```shell
-make alacritty
-```
-
 ## TODO
 
 - Use notifiers to handle service restarts
