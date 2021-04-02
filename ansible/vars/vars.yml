@@ -9,6 +9,7 @@ target_config_dir: "{{ home }}/.config"
 snaps_tools:
   - name: hey-mail
   - name: spotify
+  - name: joplin-desktop
 
 apt_tools:
   - name: htop
