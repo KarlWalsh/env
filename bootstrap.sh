@@ -1,22 +1,22 @@
-#!/bin/sh
+#!/bin/env sh
 
-ENV=$HOME/.env
-URL=git@github.com:karlwalsh/env.git
+ENV="$HOME/.env"
+URL="git@github.com:karlwalsh/env.git"
 
-echo "Bootstrapping local machine - first updating, and installing dependencies"
+printf "Bootstrapping local machine - first updating, and installing dependencies\n"
 
 sudo apt update
 sudo apt install -y git make
 
 if [ ! -d "$ENV" ] ; then
-  echo "$ENV doesn't exist, will clone from $URL"
-  git clone --recurse-submodules $URL $ENV
+  printf ''\''%s'\'' doesn'\''t exist, will clone from '\''%s'\''\n' "$ENV" "$URL"
+  git clone --recurse-submodules "$URL" "$ENV"
 else
-  echo "$ENV project already exists, no need to clone"
+  printf ''\''%s'\'' project already exists, no need to clone\n' "$ENV"
 fi
 
-cd $ENV || exit
+cd "$ENV" || exit
 
 make bootstrap
 
-echo "Done - you will need to logout/restart for some changes to take effect"
+printf "Done - you will need to logout/restart for some changes to take effect\n"
