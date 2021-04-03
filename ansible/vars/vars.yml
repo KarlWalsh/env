@@ -10,6 +10,7 @@ snaps_tools:
   - name: hey-mail
   - name: spotify
   - name: joplin-desktop
+  - name: sleek
 
 apt_tools:
   - name: htop
