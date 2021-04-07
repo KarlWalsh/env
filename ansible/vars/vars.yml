@@ -29,6 +29,7 @@ apt_development:
   - name: httpie
   - name: curl
   - name: glogg
+  - name: jq
 
 apt_terminal:
   - name: tmux
